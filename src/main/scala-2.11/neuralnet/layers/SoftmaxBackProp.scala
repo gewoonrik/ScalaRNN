@@ -6,6 +6,7 @@ import breeze.linalg.Vector
 class SoftmaxBackProp extends BackProp {
 
   override def backProp(l: Layer, inputs: List[Vector[Double]], outputs: List[Vector[Double]], outputMasks: List[Boolean], gradientsNextLayer: List[Vector[Double]], learningRate: Double): List[Vector[Double]] = {
+    // :'(
     val layer = l.asInstanceOf[SoftmaxLayer]
     val dVs = gradientsNextLayer.zip(inputs).map((LinAlgHelper.outerProduct _).tupled)
     val dBias = gradientsNextLayer.reduce(_+_)

@@ -14,6 +14,8 @@ class RNNBackProp extends BackProp{
     * @return
     */
   override def backProp(l : Layer, inputs: List[Vector[Double]], outputs: List[Vector[Double]], outputMasks : List[Boolean], gradientsNextLayer: List[Vector[Double]], learningRate: Double) : List[Vector[Double]] = {
+    //yes, I cry in my sleep because of this.
+    //I need to find a typesafe way to do this.
     val layer = l.asInstanceOf[RNNLayer]
     val W = layer.W
     val U = layer.U
