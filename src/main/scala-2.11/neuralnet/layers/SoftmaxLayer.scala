@@ -8,12 +8,11 @@ import breeze.numerics.exp
 class SoftmaxLayer(override val nrOfInputs : Int, override val nrOfOutputs : Int) extends Layer {
 
 
-  override val backPropImpl = new SoftmaxBackProp()
+  override val backPropImpl = SoftmaxBackProp
 
   val V = initXavier(nrOfOutputs, nrOfInputs)
 
   val bias = initXavier(nrOfOutputs)
-
 
 
   override def forwardPass(x: Vector[Double]) : Vector[Double] = {

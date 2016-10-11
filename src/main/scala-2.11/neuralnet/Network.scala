@@ -57,15 +57,13 @@ case class Network(learningRate : Double = 0.007) {
     val outputs = input.map(run)
     val outputsPerLayer = outputs.flatMap(_.zipWithIndex).groupBy(x => x._2).toList.sortBy(_._1).map(x => x._2.map(y => y._1))
 
-    //the output of layer n is the input of layer n+1
-    val inputsPerLayer =  outputsPerLayer :+ input.toList
 
     var outputGradients =
       outputs
         .map(_.head)
     //softmax derative
     outputGradients.zip(labels.labels).foreach(x => x._1(x._2) -= 1)
-    for(((layer, output),input) <- layersReverse.zip(outputsPerLayer).zip(inputsPerLayer.drop(1))) {
+    for(((layer, output),input) <- layersReverse.zip(outputsPerLayer.dropRight(1)).zip(outputsPerLayer.drop(1))) {
       outputGradients = layer.backPropImpl.backProp(layer, input, output, labels.outputMask, outputGradients, learningRate)
     }
 

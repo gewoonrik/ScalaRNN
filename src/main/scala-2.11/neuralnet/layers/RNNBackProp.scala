@@ -3,7 +3,7 @@ package neuralnet.layers
 import neuralnet.LinAlgHelper
 import breeze.linalg.{DenseMatrix, DenseVector, Matrix, Vector}
 
-class RNNBackProp extends BackProp{
+object RNNBackProp extends BackProp{
   /***
     *
     * @param l

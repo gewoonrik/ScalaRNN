@@ -7,7 +7,7 @@ import breeze.linalg._
 class RNNLayer(override val nrOfInputs : Int, override val nrOfOutputs : Int, val activationFunction: ActivationFunction) extends Layer {
 
 
-  override val backPropImpl = new RNNBackProp()
+  override val backPropImpl = RNNBackProp
 
   //input weights
   val U = initXavier(nrOfOutputs, nrOfInputs)
@@ -17,7 +17,7 @@ class RNNLayer(override val nrOfInputs : Int, override val nrOfOutputs : Int, va
 
   val bias = initXavier(nrOfOutputs)
 
-  var hiddenState = Vector.zeros[Double](nrOfOutputs)
+  private var hiddenState = Vector.zeros[Double](nrOfOutputs)
 
 
   //this is one step in the RNN
