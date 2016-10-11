@@ -4,7 +4,7 @@ import neuralnet.layers.Layer
 import breeze.linalg.{argmax, SparseVector, Vector}
 
 
-case class Network(learningRate : Double = 0.007) {
+case class Network(learningRate : Double = 0.02) {
 
   type InputVector = Vector[Double]
   type Sequence = List[InputVector]

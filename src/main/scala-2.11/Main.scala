@@ -9,6 +9,10 @@ object Main {
   def main(args: Array[String]) : Unit = {
     val vocab = loadVocab(new File("/Users/rik/Downloads/aclImdb/imdb.vocab"))
 
+    val totalSize = 2*500
+    val trainingPercentage = 0.9
+    val testPercentage = 1-trainingPercentage
+
     def toInputArray(x : List[Int]) : List[Vector[Double]] = {
       x.map {
         w =>
@@ -17,8 +21,8 @@ object Main {
     }
 
     println("vocabulary size:"+ vocab.size)
-    val neg = loadData(new File("/Users/rik/Downloads/aclImdb/test/neg"), 550).map((_,false))
-    val pos = loadData(new File("/Users/rik/Downloads/aclImdb/test/pos"), 550).map((_, true))
+    val neg = loadData(new File("/Users/rik/Downloads/aclImdb/test/neg"), totalSize/2).map((_,false))
+    val pos = loadData(new File("/Users/rik/Downloads/aclImdb/test/pos"), totalSize/2).map((_, true))
     val alternating = new AlternatingIterator[(String,Boolean)](neg.iterator, pos.iterator).toList
 
     println("loaded files")
@@ -27,26 +31,29 @@ object Main {
       .map(x =>
         (x._1
           .filter(w=>vocab.contains(w))
-          .take(60)//only take the first 60 words of every file to speedup testing
           .map(w=> vocab.get(w).get),
         x._2)
       )
 
     val network = new Network()
-      .andThen(new RNNLayer(vocab.size,30, ActivationFunction.ReLu))
-      .andThen(new RNNLayer(30,20, ActivationFunction.ReLu))
-      .andThen(new SoftmaxLayer(20,vocab.size))
+      .andThen(new RNNLayer(vocab.size,100, ActivationFunction.ReLu))
+      .andThen(new RNNLayer(100,50, ActivationFunction.ReLu))
+      .andThen(new SoftmaxLayer(50,2))
 
-    var count = 0
-    val testSet = sequences.take(100).map(x => (toInputArray(x._1), x._2))
+    //take data from outside the trainingset
+    val testSet = sequences.slice((trainingPercentage*totalSize).toInt , totalSize - 1).map(x => (toInputArray(x._1), x._2))
     val labels = testSet.map(x => if(x._2) 1 else 0)
+
     println("start learning")
 
-    for(((sequence,pos), index) <- sequences.view.zipWithIndex) {
+    val trainingSet = sequences.take((trainingPercentage*totalSize).toInt)
+    for(((sequence,pos), index) <- trainingSet.view.zipWithIndex) {
+
       if(index %10 == 0) {
         val loss = network.calculateLoss(testSet.map(_._1), labels)
         println("iteration "+index +": loss: "+loss)
       }
+
       val input = toInputArray(sequence)
       val label = if(pos) 1 else 0
       network.SGD(input, Labels.onlyOne(sequence.length,label))

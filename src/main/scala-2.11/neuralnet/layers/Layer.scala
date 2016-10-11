@@ -11,7 +11,7 @@ trait Layer {
 
   def nrOfOutputs: Int
 
-  def initXavier(rows: Int, columns: Int): Matrix[Double] = {
+  def initXavier(rows: Int, columns: Int): DenseMatrix[Double] = {
     val sigma = Math.sqrt(2 / (nrOfInputs.toDouble + nrOfOutputs))
 
     val normal = Gaussian(0, sigma)
@@ -20,7 +20,7 @@ trait Layer {
     new DenseMatrix[Double](rows, columns, samples.toArray)
   }
 
-  def initXavier(rows: Int): Vector[Double] = {
+  def initXavier(rows: Int): DenseVector[Double] = {
     val sigma = Math.sqrt(2 / (nrOfInputs.toDouble + nrOfOutputs))
 
     val normal = Gaussian(0, sigma)
@@ -30,7 +30,6 @@ trait Layer {
   }
 
   def forwardPass(x: Vector[Double]): Vector[Double]
-
 
 
   def reset : Unit
