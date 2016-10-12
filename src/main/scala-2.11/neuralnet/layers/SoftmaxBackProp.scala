@@ -1,7 +1,7 @@
 package neuralnet.layers
 
 import neuralnet.LinAlgHelper
-import breeze.linalg.{Matrix, Vector}
+import breeze.linalg.{DenseVector, Tensor, Matrix, Vector}
 
 object SoftmaxBackProp extends BackProp {
 
@@ -14,13 +14,14 @@ object SoftmaxBackProp extends BackProp {
 
 
     val dVs = gradientsM.zip(inputsM).map(LinAlgHelper.outerProduct _ tupled)
-    val dBias = gradientsM.reduce(_+_)
+    val dBias= gradientsM.reduce(_+_).toDenseVector
 
-    val dInputs = gradientsNextLayer.map(layer.V.t.toDenseMatrix * _)
+    val dInputs: List[Vector[Double]] = gradientsNextLayer.map(layer.V.t.toDenseMatrix * _)
 
-    layer.V +=  -learningRate * dVs.reduce(_+_)
-    layer.bias += -learningRate * dBias
+    layer.V +=  preProcessGradients(-learningRate * dVs.reduce(_+_))
+    layer.bias += preProcessGradients(-learningRate * dBias)
 
     dInputs
   }
+
 }

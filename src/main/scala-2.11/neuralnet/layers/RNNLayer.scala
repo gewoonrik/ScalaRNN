@@ -17,7 +17,7 @@ class RNNLayer(override val nrOfInputs : Int, override val nrOfOutputs : Int, va
 
   val bias = initXavier(nrOfOutputs)
 
-  private var hiddenState = Vector.zeros[Double](nrOfOutputs)
+  var hiddenState = Vector.zeros[Double](nrOfOutputs)
 
 
   //this is one step in the RNN
@@ -31,7 +31,7 @@ class RNNLayer(override val nrOfInputs : Int, override val nrOfOutputs : Int, va
     * @return
     */
   def reset: Unit = {
-    var hiddenState = Vector.zeros[Double](nrOfOutputs)
+    hiddenState = Vector.zeros[Double](nrOfOutputs)
   }
 
 }

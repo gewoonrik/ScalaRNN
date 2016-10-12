@@ -1,6 +1,7 @@
 package neuralnet.layers
 
-import breeze.linalg.Vector
+import breeze.linalg.support._
+import breeze.linalg._
 
 trait BackProp  {
   /**
@@ -14,4 +15,11 @@ trait BackProp  {
     * @return
     */
   def backProp(layer: Layer, inputs: List[Vector[Double]], outputs: List[Vector[Double]], outputMasks: List[Boolean], gradientsNextLayer: List[Vector[Double]], learningRate: Double): List[Vector[Double]]
+  def preProcessGradients(matrix: DenseMatrix[Double]) : DenseMatrix[Double] = {
+    matrix.map(x => Math.max(-1, x)).map(x => Math.min(1,x))
+  }
+
+  def preProcessGradients(vector: DenseVector[Double]) : DenseVector[Double] = {
+    vector.map(x => Math.max(-1, x)).map(x => Math.min(1,x))
+  }
 }
