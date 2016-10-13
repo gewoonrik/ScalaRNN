@@ -16,10 +16,10 @@ trait BackProp  {
     */
   def backProp(layer: Layer, inputs: List[Vector[Double]], outputs: List[Vector[Double]], outputMasks: List[Boolean], gradientsNextLayer: List[Vector[Double]], learningRate: Double): List[Vector[Double]]
   def preProcessGradients(matrix: DenseMatrix[Double]) : DenseMatrix[Double] = {
-    matrix.map(x => Math.max(-1, x)).map(x => Math.min(1,x))
+    matrix.map(x => Math.max(-20, x)).map(x => Math.min(20,x))
   }
 
   def preProcessGradients(vector: DenseVector[Double]) : DenseVector[Double] = {
-    vector.map(x => Math.max(-1, x)).map(x => Math.min(1,x))
+    vector.map(x => Math.max(-20, x)).map(x => Math.min(20,x))
   }
 }

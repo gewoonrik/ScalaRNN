@@ -5,7 +5,7 @@ import breeze.linalg.{argmax, SparseVector, Vector}
 
 
 
-case class Network(learningRate : Double = 0.001) {
+case class Network(learningRate : Double = 0.015) {
 
   type InputVector = Vector[Double]
   type Sequence = List[InputVector]
