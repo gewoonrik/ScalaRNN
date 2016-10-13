@@ -52,7 +52,8 @@ object RNNBackProp extends BackProp{
     layer.U += preProcessGradients(-learningRate * dU)
     layer.bias += preProcessGradients(-learningRate * dBias)
 
-    inputGradientsSummed.toList
+    //timesteps were processed in reverse order, so reverse again
+    inputGradientsSummed.toList.reverse
   }
 
   /**
@@ -115,7 +116,6 @@ object RNNBackProp extends BackProp{
 
       //dActivation/dCurHiddenState = W
       deltaTime = layer.W * dActivation
-      //todo: I think this is not in correct order
       inputGradients(i) = layer.U.toDenseMatrix.t * dActivation
     }
     inputGradients
