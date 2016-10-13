@@ -7,16 +7,18 @@ import neuralnet.{Labels, ActivationFunction, Network}
 
 object Main {
   def main(args: Array[String]) : Unit = {
-    val vocab = loadVocab(new File("/Users/rik/Downloads/aclImdb/imdb.vocab"))
+    val vocab = loadModelVec(new File("/Users/rik/Downloads/aclImdb/model.vec"))
 
-    val totalSize = 2*500
-    val trainingPercentage = 0.9
+    val totalSize = 2*2000
+    val epochs = 10
+    val trainingPercentage = 0.95
     val testPercentage = 1-trainingPercentage
+    val vocabVectorSize = vocab.head._2.length
 
-    def toInputArray(x : List[Int]) : List[Vector[Double]] = {
+    def toInputArray(x : List[Array[Double]]) : List[Vector[Double]] = {
       x.map {
         w =>
-          new SparseVector[Double](Array(w), Array(1.0), vocab.size)
+          new DenseVector[Double](w)
       }
     }
 
@@ -36,9 +38,9 @@ object Main {
       )
 
     val network = new Network()
-      .andThen(new RNNLayer(vocab.size,100, ActivationFunction.ReLu))
-      .andThen(new RNNLayer(100,50, ActivationFunction.ReLu))
-      .andThen(new SoftmaxLayer(50,2))
+      .andThen(new RNNLayer(vocabVectorSize,200, ActivationFunction.ReLu))
+      .andThen(new RNNLayer(200,200, ActivationFunction.ReLu))
+      .andThen(new SoftmaxLayer(200,2))
 
     //take data from outside the trainingset
     val testSet = sequences.slice((trainingPercentage*totalSize).toInt , totalSize - 1).map(x => (toInputArray(x._1), x._2))
@@ -47,17 +49,18 @@ object Main {
     println("start learning")
 
     val trainingSet = sequences.take((trainingPercentage*totalSize).toInt)
-    for(((sequence,pos), index) <- trainingSet.view.zipWithIndex) {
+    for(epoch <- 0 until epochs) {
+      for (((sequence, pos), index) <- trainingSet.view.zipWithIndex) {
 
-      if(index %10 == 0) {
-        val loss = network.calculateLoss(testSet.map(_._1), labels)
-        println("iteration "+index +": loss: "+loss)
+        if (index % 100 == 0) {
+          val loss = network.calculateLoss(testSet.map(_._1), labels)
+          println("iteration " + index + ": loss: " + loss)
+        }
+        val input = toInputArray(sequence)
+        val label = if (pos) 1 else 0
+        network.SGD(input, Labels.onlyOne(sequence.length, label))
+
       }
-
-      val input = toInputArray(sequence)
-      val label = if(pos) 1 else 0
-      network.SGD(input, Labels.onlyOne(sequence.length,label))
-
     }
   }
 
@@ -70,6 +73,12 @@ object Main {
 
     words.zipWithIndex
       .map(x => x._1 -> x._2).toMap
+  }
+
+  def loadModelVec(file : File) = {
+    scala.io.Source.fromFile(file).getLines()
+      .map(_.split(" "))
+      .map(x => x.head -> x.tail.map(_.toDouble)).toMap
   }
 
 
