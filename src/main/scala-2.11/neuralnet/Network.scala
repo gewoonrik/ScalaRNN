@@ -1,13 +1,14 @@
 package neuralnet
 
 import neuralnet.layers.Layer
-import breeze.linalg.{argmax, SparseVector, Vector}
-
+import org.nd4j.linalg.api.ndarray.INDArray
+import org.nd4j.linalg.api.ops.impl.indexaccum.IMax
+import org.nd4j.linalg.factory.Nd4j
 
 
 case class Network(learningRate : Double = 0.015) {
 
-  type InputVector = Vector[Double]
+  type InputVector = INDArray
   type Sequence = List[InputVector]
 
   private var layers : List[Layer] = List()
@@ -28,7 +29,7 @@ case class Network(learningRate : Double = 0.015) {
     * @return a List of the outputs of all layers in reverse. Last output first
     */
 
-  def run(input : Vector[Double]) : List[Vector[Double]] =  {
+  def run(input : InputVector) : List[InputVector] =  {
     layers.foldLeft(List(input)){
       case (inpList, layer) =>
         layer.forwardPass(inpList.head) :: inpList
@@ -40,13 +41,17 @@ case class Network(learningRate : Double = 0.015) {
     * @param input
     * @return The last output of the RNN sequence
     */
-  def run(input : Sequence) : List[Vector[Double]] =  {
+  def run(input : Sequence) : List[InputVector] =  {
     input.map(run(_).head)
   }
 
   def predict(input : Sequence) : Int = {
     val output = input.map(run).last.last //this map is side effecting
     argmax(output)
+  }
+
+  private def argmax(arr : INDArray) = {
+    Nd4j.getExecutioner.execAndReturn(new IMax(arr)).getFinalResult
   }
 
   /**
@@ -98,7 +103,7 @@ case class Network(learningRate : Double = 0.015) {
     println("correct "+ correctPredicted.length + " of "+outputs.length)
 
     -1/N * outputs.zip(labels)
-      .map(x => x._1(x._2))
+      .map(x => x._1.getDouble(x._2))
       .map(Math.log)
       .sum
   }

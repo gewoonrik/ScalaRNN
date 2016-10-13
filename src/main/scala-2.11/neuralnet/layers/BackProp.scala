@@ -2,6 +2,8 @@ package neuralnet.layers
 
 import breeze.linalg.support._
 import breeze.linalg._
+import org.nd4j.linalg.api.ndarray.INDArray
+import org.nd4j.linalg.ops.transforms.Transforms
 
 trait BackProp  {
   /**
@@ -14,12 +16,10 @@ trait BackProp  {
     * @param learningRate the learningrate.
     * @return
     */
-  def backProp(layer: Layer, inputs: List[Vector[Double]], outputs: List[Vector[Double]], outputMasks: List[Boolean], gradientsNextLayer: List[Vector[Double]], learningRate: Double): List[Vector[Double]]
-  def preProcessGradients(matrix: DenseMatrix[Double]) : DenseMatrix[Double] = {
-    matrix.map(x => Math.max(-20, x)).map(x => Math.min(20,x))
-  }
+  def backProp(layer: Layer, inputs: List[INDArray], outputs: List[INDArray], outputMasks: List[Boolean], gradientsNextLayer: List[INDArray], learningRate: Double): List[INDArray]
 
-  def preProcessGradients(vector: DenseVector[Double]) : DenseVector[Double] = {
-    vector.map(x => Math.max(-20, x)).map(x => Math.min(20,x))
+
+  def preProcessGradients(vector: INDArray) : INDArray = {
+    Transforms.max(vector, -2)
   }
 }

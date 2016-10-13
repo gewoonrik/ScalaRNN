@@ -1,8 +1,10 @@
 package neuralnet.layers
 
 import neuralnet.LinAlgHelper
-import breeze.linalg._
-import breeze.numerics.exp
+import org.nd4j.linalg.api.ndarray.INDArray
+import org.nd4j.linalg.ops.transforms.Transforms
+import org.nd4s.Implicits._
+
 
 
 class SoftmaxLayer(override val nrOfInputs : Int, override val nrOfOutputs : Int) extends Layer {
@@ -15,13 +17,13 @@ class SoftmaxLayer(override val nrOfInputs : Int, override val nrOfOutputs : Int
   val bias = initXavier(nrOfOutputs)
 
 
-  override def forwardPass(x: Vector[Double]) : Vector[Double] = {
-    softmax(V * x + bias)
+  override def forwardPass(x: INDArray) : INDArray = {
+    softmax(V ** x + bias)
   }
 
-  private def softmax(x : Vector[Double]) : Vector[Double] = {
-    val eX = exp(x)
-    val s = sum(eX)
+  private def softmax(x : INDArray) : INDArray = {
+    val eX = Transforms.exp(x)
+    val s = eX.sumNumber().doubleValue()
     eX/s
   }
 

@@ -2,6 +2,9 @@ package neuralnet.layers
 
 import neuralnet.ActivationFunction
 import breeze.linalg._
+import org.nd4j.linalg.api.ndarray.INDArray
+import org.nd4j.linalg.factory.Nd4j
+import org.nd4s.Implicits._
 
 
 class RNNLayer(override val nrOfInputs : Int, override val nrOfOutputs : Int, val activationFunction: ActivationFunction) extends Layer {
@@ -17,12 +20,12 @@ class RNNLayer(override val nrOfInputs : Int, override val nrOfOutputs : Int, va
 
   val bias = initXavier(nrOfOutputs)
 
-  var hiddenState = Vector.zeros[Double](nrOfOutputs)
+  var hiddenState = Nd4j.zeros(nrOfOutputs, 1)
 
 
   //this is one step in the RNN
-  def forwardPass(input: Vector[Double]): Vector[Double] = {
-    hiddenState = activationFunction.call(U * input + W * hiddenState + bias)
+  def forwardPass(input: INDArray): INDArray = {
+    hiddenState = activationFunction.call(U ** input + W ** hiddenState + bias)
     hiddenState
   }
 
@@ -31,7 +34,7 @@ class RNNLayer(override val nrOfInputs : Int, override val nrOfOutputs : Int, va
     * @return
     */
   def reset: Unit = {
-    hiddenState = Vector.zeros[Double](nrOfOutputs)
+    hiddenState = Nd4j.zeros(nrOfOutputs)
   }
 
 }

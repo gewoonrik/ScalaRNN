@@ -1,11 +1,11 @@
 package neuralnet.layers
 
-import neuralnet.LinAlgHelper
-import breeze.linalg.{DenseVector, Tensor, Matrix, Vector}
+import org.nd4s.Implicits._
+import org.nd4j.linalg.api.ndarray.INDArray
 
 object SoftmaxBackProp extends BackProp {
 
-  override def backProp(l: Layer, inputs: List[Vector[Double]], outputs: List[Vector[Double]], outputMasks: List[Boolean], gradientsNextLayer: List[Vector[Double]], learningRate: Double): List[Vector[Double]] = {
+  override def backProp(l: Layer, inputs: List[INDArray], outputs: List[INDArray], outputMasks: List[Boolean], gradientsNextLayer: List[INDArray], learningRate: Double): List[INDArray] = {
     // :'(
     val layer = l.asInstanceOf[SoftmaxLayer]
     //these only contain the masked gradients and inputs
@@ -13,13 +13,14 @@ object SoftmaxBackProp extends BackProp {
     val inputsM = inputs.zip(outputMasks).filter(_._2).map(_._1)
 
 
-    val dVs = gradientsM.zip(inputsM).map(LinAlgHelper.outerProduct _ tupled)
-    val dBias= gradientsM.reduce(_+_).toDenseVector
+    val dVs = gradientsM.zip(inputsM).map(x => x._1.T ** x._2)
+    val dBias = gradientsM.sum
 
-    val dInputs: List[Vector[Double]] = gradientsNextLayer.map(layer.V.t.toDenseMatrix * _)
+    val dInputs: List[INDArray] = gradientsNextLayer.map(layer.V.T * _)
 
-    layer.V +=  preProcessGradients(-learningRate * dVs.reduce(_+_))
-    layer.bias += preProcessGradients(-learningRate * dBias)
+    val sumDVs = dVs.sum
+    layer.V +=  preProcessGradients(sumDVs * -learningRate)
+    layer.bias += preProcessGradients(dBias * -learningRate)
 
     dInputs
   }

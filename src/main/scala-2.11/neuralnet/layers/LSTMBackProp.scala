@@ -2,6 +2,7 @@ package neuralnet.layers
 
 import breeze.linalg
 import breeze.linalg.Tensor
+import org.nd4j.linalg.api.ndarray.INDArray
 
 object LSTMBackProp extends BackProp{
   /**
@@ -14,6 +15,6 @@ object LSTMBackProp extends BackProp{
     * @param learningRate the learningrate.
     * @return
     */
-  override def backProp(layer: Layer, inputs: List[linalg.Vector[Double]], outputs: List[linalg.Vector[Double]], outputMasks: List[Boolean], gradientsNextLayer: List[linalg.Vector[Double]], learningRate: Double): List[linalg.Vector[Double]] = ???
+  override def backProp(layer: Layer, inputs: List[INDArray], outputs: List[INDArray], outputMasks: List[Boolean], gradientsNextLayer: List[INDArray], learningRate: Double): List[INDArray] = ???
 
 }
