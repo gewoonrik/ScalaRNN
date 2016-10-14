@@ -3,6 +3,8 @@ import java.io.File
 import breeze.linalg._
 import neuralnet.layers.{RNNLayer, SoftmaxLayer}
 import neuralnet.{Labels, ActivationFunction, Network}
+import org.nd4j.linalg.api.ndarray.INDArray
+import org.nd4j.linalg.factory.Nd4j
 
 
 object Main {
@@ -15,10 +17,10 @@ object Main {
     val testPercentage = 1-trainingPercentage
     val vocabVectorSize = vocab.head._2.length
 
-    def toInputArray(x : List[Array[Double]]) : List[Vector[Double]] = {
+    def toInputArray(x : List[Array[Double]]) : List[INDArray] = {
       x.map {
         w =>
-          new DenseVector[Double](w)
+          Nd4j.create(w)
       }
     }
 

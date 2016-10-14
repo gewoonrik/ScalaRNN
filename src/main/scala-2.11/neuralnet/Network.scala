@@ -74,7 +74,7 @@ case class Network(learningRate : Double = 0.015) {
       outputs
         .map(_.head) // take the output of the output layer
     //softmax derivative
-    outputGradients.zip(labels.labels).foreach(x => x._1(x._2) -= 1)
+    outputGradients.zip(labels.labels).foreach(x => x._1.putScalar(x._2, x._1.getDouble(x._2)-1.0))
 
     for(((layer, output),input) <-
         layersReverse

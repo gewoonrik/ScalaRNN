@@ -1,7 +1,6 @@
 package neuralnet.layers
 
 import neuralnet.LinAlgHelper
-import breeze.linalg._
 import org.nd4j.linalg.api.ndarray.INDArray
 import org.nd4j.linalg.factory.Nd4j
 import org.nd4s.Implicits._
@@ -51,9 +50,9 @@ object RNNBackProp extends BackProp{
       }
     }
     //update parameters
-    layer.W += preProcessGradients(-learningRate * dW)
-    layer.U += preProcessGradients(-learningRate * dU)
-    layer.bias += preProcessGradients(-learningRate * dBias)
+    layer.W += preProcessGradients(dW * -learningRate)
+    layer.U += preProcessGradients(dU * -learningRate)
+    layer.bias += preProcessGradients(dBias * -learningRate)
 
     //timesteps were processed in reverse order, so reverse again
     inputGradientsSummed.toList.reverse

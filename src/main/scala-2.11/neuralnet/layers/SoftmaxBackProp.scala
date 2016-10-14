@@ -14,11 +14,11 @@ object SoftmaxBackProp extends BackProp {
 
 
     val dVs = gradientsM.zip(inputsM).map(x => x._1.T ** x._2)
-    val dBias = gradientsM.sum
+    val dBias = gradientsM.reduce(_+_)
 
     val dInputs: List[INDArray] = gradientsNextLayer.map(layer.V.T * _)
 
-    val sumDVs = dVs.sum
+    val sumDVs = dVs.reduce[INDArray](_ + _)
     layer.V +=  preProcessGradients(sumDVs * -learningRate)
     layer.bias += preProcessGradients(dBias * -learningRate)
 

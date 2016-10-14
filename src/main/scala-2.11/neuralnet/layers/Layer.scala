@@ -1,8 +1,9 @@
 package neuralnet.layers
 
-import breeze.linalg._
-import breeze.stats.distributions.Gaussian
 import org.nd4j.linalg.api.ndarray.INDArray
+import org.nd4j.linalg.factory.Nd4j
+import org.nd4s.Implicits._
+
 
 trait Layer {
 
@@ -14,20 +15,14 @@ trait Layer {
 
   def initXavier(rows: Int, columns: Int): INDArray = {
     val sigma = Math.sqrt(2 / (nrOfInputs.toDouble + nrOfOutputs))
-
-    val normal = Gaussian(0, sigma)
-    val samples = normal.sample(rows*columns)
-
-    new DenseMatrix[Double](rows, columns, samples.toArray)
+    Nd4j.randn(rows, columns) * sigma
   }
 
   def initXavier(rows: Int): INDArray = {
     val sigma = Math.sqrt(2 / (nrOfInputs.toDouble + nrOfOutputs))
 
-    val normal = Gaussian(0, sigma)
-    val samples = normal.sample(rows)
 
-    new DenseVector[Double](samples.toArray)
+    Nd4j.randn(rows, 1) * sigma
   }
 
   def forwardPass(x: INDArray): INDArray
